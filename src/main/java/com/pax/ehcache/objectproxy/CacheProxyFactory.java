@@ -30,7 +30,7 @@ public class CacheProxyFactory {
     }
 
     /**
-     * Create a caching proxy for all methods, of all declared interfaces on the target.
+     * Create a caching proxy configured according to the provided ProxyConfig(s)
      */
     public final <T> T create(Object target, ProxyConfig... proxyConfigs) {
         CacheInvocationHandler handler = new CacheInvocationHandler(target, getMethodCacheMap(proxyConfigs));
