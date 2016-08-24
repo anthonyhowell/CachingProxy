@@ -12,11 +12,10 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Optional;
 
-public class ProxyAllInterfacesTest {
+public class ProxyOneMethodTest {
 
     @Test
-    public void run() throws ObjectProxyException, NoSuchMethodException {
-
+    public void run() throws NoSuchMethodException, ObjectProxyException {
         // Default cache configuration
         CacheConfiguration defaultCacheConfig = new CacheConfiguration("my_default", 5000)
                 .timeToLiveSeconds(120)
@@ -30,20 +29,21 @@ public class ProxyAllInterfacesTest {
         ProxyConfig proxyConfig = new ProxyConfig()
                 .target(new DefaultPeopleService(peopleStore))
                 .addInterface(PeopleService.class)
-                .proxyAllInterfaces()
+                .addMethod(PeopleService.class.getMethod("findById", Long.class))
                 .cacheConfiguration(new CacheConfiguration("cache_01", 5000).timeToLiveSeconds(120).timeToIdleSeconds(60));
 
         PeopleService peopleService = proxyFactory.create(new DefaultPeopleService(peopleStore), proxyConfig);
 
-        // Since we used proxyAllInterfaces(), every method will attempt to return a cached response
+        // Since we explicitly defined a method on the ProxyConfig, `only` that method will attempt
+        // to return a cached response
 
-        Optional<Person> result = peopleService.findById(10L);          // Fall through
-        Optional<Person> result2 = peopleService.findById(10L);         // Cached response
-        Optional<Person> result3 = peopleService.findById(10L);         // Cached response
+        Optional<Person> result = peopleService.findById(10L);      // Fall through
+        Optional<Person> result2 = peopleService.findById(10L);     // Cached response
+        Optional<Person> result3 = peopleService.findById(10L);     // Cached response
 
         Optional<List<Person>> result4 = peopleService.findByLastName("Pitt");  // Fall through
-        Optional<List<Person>> result5 = peopleService.findByLastName("Pitt");  // Cached Response
-        Optional<List<Person>> result6 = peopleService.findByLastName("Pitt");  // Cached response
+        Optional<List<Person>> result5 = peopleService.findByLastName("Pitt");  // Fall through
+        Optional<List<Person>> result6 = peopleService.findByLastName("Pitt");  // Fall through
     }
 
 }
