@@ -29,7 +29,6 @@ public class ProxyAllInterfacesTest {
         // Cache configuration for a single method
         ProxyConfig proxyConfig = new ProxyConfig()
                 .target(new DefaultPeopleService(peopleStore))
-                .addInterface(PeopleService.class)
                 .proxyAllInterfaces()
                 .cacheConfiguration(new CacheConfiguration("cache_01", 5000).timeToLiveSeconds(120).timeToIdleSeconds(60));
 
